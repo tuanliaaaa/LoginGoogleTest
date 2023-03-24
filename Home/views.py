@@ -8,7 +8,7 @@ from django.shortcuts import redirect
 class LoginByGoogle(View):
     def get(self,request):
         flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
-            'client_secret.json',
+            'Home/client_secret.json',
             scopes=['https://www.googleapis.com/auth/drive.metadata.readonly'])
 
 
