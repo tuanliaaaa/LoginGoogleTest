@@ -8,6 +8,8 @@ from django.shortcuts import render
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
+from django.http import HttpResponse
+from django.contrib.sessions.backends.db import SessionStore
 class LoginByGoogle(View):
     def get(self,request):
         flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
@@ -22,14 +24,16 @@ class LoginByGoogle(View):
             
             access_type='offline',
         
-             include_granted_scopes='true')
+            #  include_granted_scopes='true'
+             )
+        session = SessionStore()
         request.session['state'] = state
-        request.session.save()
-
+        session.save()
+        
         return redirect(authorization_url)
 class LoginGoogleResponse(View):
     def get(self,request):
-        state = request.session.get('state')
+        state = request.session.get('state','')
         flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
             'Home/client_secret.json',
             scopes=['https://www.googleapis.com/auth/userinfo.profile'],
@@ -40,6 +44,7 @@ class LoginGoogleResponse(View):
         flow.fetch_token(authorization_response=authorization_response)
 
         credentials = flow.credentials
+        session = SessionStore()
         request.session['credentials'] = {
             'token': credentials.token,
             'refresh_token': credentials.refresh_token,
@@ -47,8 +52,9 @@ class LoginGoogleResponse(View):
             'client_id': credentials.client_id,
             'client_secret': credentials.client_secret,
             'scopes': credentials.scopes}
-        request.session.save()
+        session.save()
         return request.build_absolute_uri(reverse('home'))
+
 class Home(View):
     def get(self,request):
         credentials_dict = request.session.get('credentials')
