@@ -37,7 +37,8 @@ class LoginGoogleResponse(View):
         flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
             'Home/client_secret.json',
             scopes=['https://www.googleapis.com/auth/userinfo.profile'],
-            state=state)
+             #state=state # disable state verification
+        )
         flow.redirect_uri = request.build_absolute_uri(reverse('oauth2callback'))
         authorization_response = request.build_absolute_uri()
         print(authorization_response)
@@ -53,7 +54,8 @@ class LoginGoogleResponse(View):
             'client_secret': credentials.client_secret,
             'scopes': credentials.scopes}
         session.save()
-        return request.build_absolute_uri(reverse('home'))
+        home_uri = request.build_absolute_uri(reverse('home'))
+        return redirect(home_uri)
 
 class Home(View):
     def get(self,request):
