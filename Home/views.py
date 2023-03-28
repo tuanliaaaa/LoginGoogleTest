@@ -40,6 +40,8 @@ class LoginGoogleResponse(View):
             scopes=['https://www.googleapis.com/auth/userinfo.profile']
             ,state=state
             )
+
+        
         flow.redirect_uri = request.build_absolute_uri(reverse('oauth2callback'))
         
         authorization_response = request.build_absolute_uri()
@@ -57,7 +59,12 @@ class LoginGoogleResponse(View):
             'scopes': credentials.scopes}
         print(credentials.refresh_token)
         session.save()
+<<<<<<< HEAD
         return redirect(request.build_absolute_uri(reverse('home')))
+=======
+        home_uri = request.build_absolute_uri(reverse('home'))
+        return redirect(home_uri)
+>>>>>>> d1456d11bdd41a9398a7e5ef5985c20db3746ca3
 
 class Home(View):
     def get(self,request):
